@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://repath.local/schema/pack.schema.json",
+  "title": "RePath Pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "pack_id",
+    "pack_version",
+    "retrieved_at",
+    "locations",
+    "items"
+  ],
+  "anyOf": [
+    {"required": ["municipality"]},
+    {"required": ["jurisdiction"]}
+  ],
+  "properties": {
+    "pack_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pack_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pack_schema_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "retrieved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "jurisdiction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "country"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "country": {"type": "string", "minLength": 1},
+        "kind": {
+          "type": "string",
+          "enum": [
+            "municipality",
+            "county",
+            "region",
+            "province",
+            "territory",
+            "national",
+            "custom"
+          ]
+        },
+        "admin_areas": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/adminArea"}
+        }
+      }
+    },
+    "municipality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "region", "country"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "region": {"type": "string", "minLength": 1},
+        "country": {"type": "string", "minLength": 1}
+      }
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "name", "country"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "name": {"type": "string", "minLength": 1},
+          "country": {"type": "string", "minLength": 1},
+          "address": {"type": "string"},
+          "address_lines": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "city": {"type": "string"},
+          "locality": {"type": "string"},
+          "region": {"type": "string"},
+          "admin_areas": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/adminArea"}
+          },
+          "postal_code": {"type": "string"},
+          "hours": {"type": "string"},
+          "website": {"type": "string"},
+          "phone": {"type": "string"},
+          "coordinates": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["lat", "lng"],
+            "properties": {
+              "lat": {"type": "number"},
+              "lng": {"type": "number"}
+            }
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "option_cards"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "name": {"type": "string", "minLength": 1},
+          "keywords": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "option_cards": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/optionCard"}
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "adminArea": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "type": {"type": "string", "minLength": 1},
+        "code": {"type": "string", "minLength": 1}
+      }
+    },
+    "optionCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "title", "priority", "confidence", "actions"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "kind": {
+          "type": "string",
+          "enum": [
+            "reuse",
+            "curbside_recycle",
+            "dropoff_recycle",
+            "dropoff_other",
+            "dropoff_hhw",
+            "compost",
+            "trash",
+            "sell"
+          ]
+        },
+        "title": {"type": "string", "minLength": 1},
+        "priority": {"type": "number"},
+        "confidence": {"type": "number"},
+        "actions": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/action"}
+        }
+      }
+    },
+    "action": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["type", "label", "text"],
+          "properties": {
+            "type": {"const": "copy_text"},
+            "label": {"type": "string", "minLength": 1},
+            "text": {"type": "string", "minLength": 1}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["type", "label", "payload"],
+          "properties": {
+            "type": {"const": "navigate"},
+            "label": {"type": "string", "minLength": 1},
+            "payload": {"type": "object"}
+          }
+        }
+      ]
+    }
+  }
+}
