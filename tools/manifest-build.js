@@ -13,6 +13,8 @@ const schemaRaw = fs.existsSync(schemaPath) ? fs.readFileSync(schemaPath, 'utf8'
 const schemaSha256 = schemaRaw
   ? crypto.createHash('sha256').update(schemaRaw).digest('hex')
   : null;
+const packBaseUrlRaw = String(process.env.REPATH_PACK_BASE_URL || '').trim();
+const packBaseUrl = packBaseUrlRaw ? packBaseUrlRaw.replace(/\/+$/, '') : '';
 
 let stemToken = null;
 if (process.env.REPATH_DISABLE_STEMMER !== '1') {
@@ -70,6 +72,13 @@ function loadPack(packPath) {
   return JSON.parse(raw);
 }
 
+function buildPackUrl(packId) {
+  if (packBaseUrl) {
+    return `${packBaseUrl}/${packId}.json`;
+  }
+  return `packages/packs/${packId}/pack.json`;
+}
+
 if (!fs.existsSync(packsRoot)) {
   console.error(`Missing packs directory: ${packsRoot}`);
   process.exit(1);
@@ -99,7 +108,7 @@ for (const dir of packDirs) {
   const packSchemaVersion = pack.pack_schema_version || SCHEMA_VERSION;
 
   manifest[packId] = {
-    url: `https://example.com/packs/${packId}.json`,
+    url: buildPackUrl(packId),
     sha256: sha256File(packPath),
     pack_version: pack.pack_version,
     pack_schema_version: packSchemaVersion,

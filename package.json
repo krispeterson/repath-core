@@ -5,6 +5,7 @@
   "scripts": {
     "build:manifest": "node tools/manifest-build.js",
     "query": "node tools/query-pack.js",
+    "release:runtime": "node tools/release-runtime-bundle.js",
     "smoke": "node tools/smoke-test.js",
     "validate": "node tools/validate-pack.js"
   },

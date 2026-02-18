@@ -12,9 +12,35 @@ npm run query -- --pack fort-collins-co-us "cardboard"
 ## Tooling
 - `npm run build:manifest` generates `dist/manifest.json` from local packs.
 - `npm run build:manifest` also generates `dist/search.json` with a lightweight token index.
+- `npm run release:runtime` builds a release-ready runtime data bundle plus checksums.
 - `npm run smoke` runs a tiny validation + query smoke test.
 Notes:
 - Search stemming is optional. If you install `stemmer`, search will use it; otherwise it falls back to basic token normalization.
+- `build:manifest` supports `REPATH_PACK_BASE_URL` to produce deployable `manifest.json` URLs (for example: `REPATH_PACK_BASE_URL=https://cdn.example.com/packs npm run build:manifest`).
+
+## Runtime Release Contract
+Runtime releases are data-only and include:
+- `packages/packs/*/pack.json`
+- `schema/pack.schema.json`
+- `dist/manifest.json`
+- `dist/search.json`
+
+Release assets should also include:
+- `<bundle>.tar.gz`
+- `<bundle>.sha256`
+- `<bundle>.files.sha256`
+
+For details, see `docs/release-contract.md`.
+
+To generate a release bundle locally:
+```bash
+npm run release:runtime
+```
+
+Optional flags:
+- `--tag vX.Y.Z`
+- `--out-dir dist/releases`
+- `--pack-base-url https://cdn.example.com/packs`
 
 ## Pack authoring
 This repo uses a small schema and prompt template to create consistent jurisdiction packs.
