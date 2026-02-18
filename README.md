@@ -31,6 +31,7 @@ Release assets should also include:
 - `<bundle>.files.sha256`
 
 For details, see `docs/release-contract.md`.
+User-facing release highlights live in `release-notes.md`.
 
 To generate a release bundle locally:
 ```bash

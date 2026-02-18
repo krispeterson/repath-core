@@ -5,6 +5,7 @@ This repo is intentionally small and uses plain JSON packs plus minimal Node too
 ## Guardrails
 - Keep pack data source-of-truth in `packages/packs/<pack-id>/pack.json`.
 - Prefer small, readable scripts in `tools/` over new dependencies.
+- Keep `release-notes.md` updated for every versioned release.
 
 ## Common tasks
 ```bash
