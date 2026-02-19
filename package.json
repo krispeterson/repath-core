@@ -7,6 +7,8 @@
     "decide": "node tools/repath-decide.js",
     "query": "node tools/query-pack.js",
     "release:runtime": "node tools/release-runtime-bundle.js",
+    "review:devsecops": "npm audit --json > audit.json || true && node tools/ci-audit-gate.js audit.json ${REPATH_AUDIT_FAIL_LEVEL:-critical}",
+    "review:pm": "node tools/ci-pr-contract.js",
     "smoke": "node tools/smoke-test.js",
     "test": "node --test test/**/*.test.js",
     "validate": "node tools/validate-pack.js"
