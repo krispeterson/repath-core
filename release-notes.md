@@ -1,35 +1,49 @@
 # RePath Core Release Notes
 
-## Upcoming (Unreleased)
-- Adds deterministic decide-engine support for reuse channels + donation places.
-- Adds pack inheritance (`extends`) and variables-driven URL templating for channel links.
-- Adds country/municipality-scoped channel filtering and top-pathway follow-up questions (city/ZIP).
-- Adds new baseline channel packs:
-  - `repath.base.channels.v1`
-  - `repath.country.us.channels.v1`
-  - `repath.country.us.default.v1` (national fallback for unmapped U.S. ZIPs)
-  - `repath.muni.us-co-fort-collins.v1` (sample)
-
 ## Version
-- `v0.1.1`
+- `v0.2.0`
 
 ## Summary
-- Adds a reproducible runtime-data release flow for `repath-core`.
-- Clarifies exactly which files are contractually included in runtime bundles.
-- Improves deployability by supporting hosted pack URLs in generated `manifest.json`.
+- Adds deterministic reuse-channel and donation-place support to the core decide engine.
+- Extends the pack system with inheritance, scoped channel filtering, and URL templating for reusable options.
+- Standardizes runtime bundle generation for deployable pack/schema/manifest/search artifacts.
 
 ## User-Facing Additions
-- New release bundling command: `npm run release:runtime`
-- Runtime release contract documentation: `docs/release-contract.md`
-- Optional `REPATH_PACK_BASE_URL` support for deploy-ready pack URLs in `dist/manifest.json`
+- Decision outputs can now include:
+  - online/community reuse channels (sell/give-away/exchange/repair/donation directories)
+  - physical donation places from pack data
+- Top-ranked pathways can now request missing city/ZIP context only when needed to resolve relevant channels.
 
-## Runtime Bundle Contents
-- `packages/packs/*/pack.json`
-- `schema/pack.schema.json`
-- `dist/manifest.json`
-- `dist/search.json`
+## Developer and Integration Additions
+- Decide-engine and pack updates:
+  - pack inheritance with `extends`
+  - pack-level `variables` for URL templating
+  - country/municipality channel scope filtering
+  - top-pathway follow-up question generation for missing template fields
+- New baseline packs:
+  - `repath.base.channels.v1`
+  - `repath.country.us.channels.v1`
+  - `repath.country.us.default.v1`
+  - `repath.muni.us-co-fort-collins.v1`
+- Runtime release tooling:
+  - `npm run release:runtime`
+  - `docs/release-contract.md`
+  - optional `REPATH_PACK_BASE_URL` support for hosted pack URLs in generated `dist/manifest.json`
+- Runtime bundle contract includes:
+  - `packages/packs/*/pack.json`
+  - `schema/pack.schema.json`
+  - `dist/manifest.json`
+  - `dist/search.json`
 
-## Artifacts
-- `repath-core-v0.1.1-runtime-data.tar.gz`
-- `repath-core-v0.1.1-runtime-data.sha256`
-- `repath-core-v0.1.1-runtime-data.files.sha256`
+## Release Artifacts
+- `repath-core-v0.2.0-runtime-data.tar.gz`
+- `repath-core-v0.2.0-runtime-data.sha256`
+- `repath-core-v0.2.0-runtime-data.files.sha256`
+
+## Validation Snapshot
+- `npm run validate` passed.
+- `npm run smoke` passed.
+- `npm test` passed.
+
+## Known Limitations
+- Runtime release script packages local runtime data artifacts only; publication to package/CDN registries is a separate step.
