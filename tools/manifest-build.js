@@ -1,66 +1,21 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { createRequire } from 'module';
+import { loadMergedPack } from './lib/pack-loader.js';
+import { tokenize } from './lib/text-utils.js';
 
 const packsRoot = path.join('packages', 'packs');
 const distDir = 'dist';
 const manifestPath = path.join(distDir, 'manifest.json');
 const searchIndexPath = path.join(distDir, 'search.json');
 const schemaPath = path.join('schema', 'pack.schema.json');
-const SCHEMA_VERSION = '1.1.0';
+const SCHEMA_VERSION = '1.2.0';
 const schemaRaw = fs.existsSync(schemaPath) ? fs.readFileSync(schemaPath, 'utf8') : '';
 const schemaSha256 = schemaRaw
   ? crypto.createHash('sha256').update(schemaRaw).digest('hex')
   : null;
 const packBaseUrlRaw = String(process.env.REPATH_PACK_BASE_URL || '').trim();
 const packBaseUrl = packBaseUrlRaw ? packBaseUrlRaw.replace(/\/+$/, '') : '';
-
-let stemToken = null;
-if (process.env.REPATH_DISABLE_STEMMER !== '1') {
-  try {
-    const require = createRequire(import.meta.url);
-    const module = require('stemmer');
-    stemToken = module.stemmer;
-  } catch (error) {
-    stemToken = null;
-  }
-}
-
-function normalizeToken(token) {
-  if (!token) {
-    return '';
-  }
-  if (token.length > 3 && token.endsWith('es')) {
-    return token.slice(0, -2);
-  }
-  if (token.length > 3 && token.endsWith('s')) {
-    return token.slice(0, -1);
-  }
-  return token;
-}
-
-function interpretToken(token) {
-  const normalized = normalizeToken(token);
-  if (!normalized) {
-    return '';
-  }
-  if (stemToken && /[a-z]/.test(normalized)) {
-    return stemToken(normalized);
-  }
-  return normalized;
-}
-
-function tokenize(text) {
-  if (!text) {
-    return [];
-  }
-  return text
-    .toLowerCase()
-    .split(/[^a-z0-9]+/g)
-    .map((token) => interpretToken(token.trim()))
-    .filter((token) => token.length > 0);
-}
 
 function sha256File(filePath) {
   const data = fs.readFileSync(filePath);
@@ -102,26 +57,27 @@ for (const dir of packDirs) {
   if (!fs.existsSync(packPath)) {
     continue;
   }
-  const pack = loadPack(packPath);
-  const packId = pack.pack_id || dir;
-  const jurisdiction = pack.jurisdiction || pack.municipality;
-  const packSchemaVersion = pack.pack_schema_version || SCHEMA_VERSION;
+  const packRaw = loadPack(packPath);
+  const packId = packRaw.pack_id || dir;
+  const packMerged = loadMergedPack(packId);
+  const jurisdiction = packRaw.jurisdiction || packRaw.municipality;
+  const packSchemaVersion = packRaw.pack_schema_version || SCHEMA_VERSION;
 
   manifest[packId] = {
     url: buildPackUrl(packId),
     sha256: sha256File(packPath),
-    pack_version: pack.pack_version,
+    pack_version: packRaw.pack_version,
     pack_schema_version: packSchemaVersion,
     pack_schema_sha256: schemaSha256,
-    retrieved_at: pack.retrieved_at,
+    retrieved_at: packRaw.retrieved_at,
     jurisdiction,
-    municipality: pack.municipality
+    municipality: packRaw.municipality
   };
 
   const itemsById = {};
   const tokenToItems = {};
 
-  pack.items.forEach((item) => {
+  (Array.isArray(packMerged.items) ? packMerged.items : []).forEach((item) => {
     itemsById[item.id] = item.name;
 
     const tokens = [
@@ -164,10 +120,10 @@ for (const dir of packDirs) {
     }, {});
 
   searchIndex.packs[packId] = {
-    pack_version: pack.pack_version,
+    pack_version: packRaw.pack_version,
     pack_schema_version: packSchemaVersion,
     pack_schema_sha256: schemaSha256,
-    retrieved_at: pack.retrieved_at,
+    retrieved_at: packRaw.retrieved_at,
     items: orderedItemsById,
     index: orderedTokenToItems
   };

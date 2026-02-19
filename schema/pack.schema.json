@@ -12,8 +12,8 @@
     "items"
   ],
   "anyOf": [
-    {"required": ["municipality"]},
-    {"required": ["jurisdiction"]}
+    { "required": ["municipality"] },
+    { "required": ["jurisdiction"] }
   ],
   "properties": {
     "pack_id": {
@@ -32,13 +32,26 @@
       "type": "string",
       "format": "date-time"
     },
+    "extends": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "variables": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
     "jurisdiction": {
       "type": "object",
       "additionalProperties": false,
       "required": ["name", "country"],
       "properties": {
-        "name": {"type": "string", "minLength": 1},
-        "country": {"type": "string", "minLength": 1},
+        "name": { "type": "string", "minLength": 1 },
+        "country": { "type": "string", "minLength": 1 },
         "kind": {
           "type": "string",
           "enum": [
@@ -48,12 +61,13 @@
             "province",
             "territory",
             "national",
+            "global",
             "custom"
           ]
         },
         "admin_areas": {
           "type": "array",
-          "items": {"$ref": "#/definitions/adminArea"}
+          "items": { "$ref": "#/definitions/adminArea" }
         }
       }
     },
@@ -62,10 +76,22 @@
       "additionalProperties": false,
       "required": ["name", "region", "country"],
       "properties": {
-        "name": {"type": "string", "minLength": 1},
-        "region": {"type": "string", "minLength": 1},
-        "country": {"type": "string", "minLength": 1}
+        "name": { "type": "string", "minLength": 1 },
+        "region": { "type": "string", "minLength": 1 },
+        "country": { "type": "string", "minLength": 1 }
       }
+    },
+    "aliases": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/alias" }
+    },
+    "channels": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/channel" }
+    },
+    "rules": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/rule" }
     },
     "locations": {
       "type": "array",
@@ -74,32 +100,36 @@
         "additionalProperties": true,
         "required": ["id", "name", "country"],
         "properties": {
-          "id": {"type": "string", "minLength": 1},
-          "name": {"type": "string", "minLength": 1},
-          "country": {"type": "string", "minLength": 1},
-          "address": {"type": "string"},
+          "id": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1 },
+          "type": {
+            "type": "string",
+            "enum": ["recycle", "dropoff", "repair", "donation", "other"]
+          },
+          "country": { "type": "string", "minLength": 1 },
+          "address": { "type": "string" },
           "address_lines": {
             "type": "array",
-            "items": {"type": "string"}
+            "items": { "type": "string" }
           },
-          "city": {"type": "string"},
-          "locality": {"type": "string"},
-          "region": {"type": "string"},
+          "city": { "type": "string" },
+          "locality": { "type": "string" },
+          "region": { "type": "string" },
           "admin_areas": {
             "type": "array",
-            "items": {"$ref": "#/definitions/adminArea"}
+            "items": { "$ref": "#/definitions/adminArea" }
           },
-          "postal_code": {"type": "string"},
-          "hours": {"type": "string"},
-          "website": {"type": "string"},
-          "phone": {"type": "string"},
+          "postal_code": { "type": "string" },
+          "hours": { "type": "string" },
+          "website": { "type": "string" },
+          "phone": { "type": "string" },
           "coordinates": {
             "type": "object",
             "additionalProperties": false,
             "required": ["lat", "lng"],
             "properties": {
-              "lat": {"type": "number"},
-              "lng": {"type": "number"}
+              "lat": { "type": "number" },
+              "lng": { "type": "number" }
             }
           }
         }
@@ -112,15 +142,15 @@
         "additionalProperties": false,
         "required": ["id", "name", "option_cards"],
         "properties": {
-          "id": {"type": "string", "minLength": 1},
-          "name": {"type": "string", "minLength": 1},
+          "id": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1 },
           "keywords": {
             "type": "array",
-            "items": {"type": "string"}
+            "items": { "type": "string" }
           },
           "option_cards": {
             "type": "array",
-            "items": {"$ref": "#/definitions/optionCard"}
+            "items": { "$ref": "#/definitions/optionCard" }
           }
         }
       }
@@ -132,9 +162,127 @@
       "additionalProperties": false,
       "required": ["name"],
       "properties": {
-        "name": {"type": "string", "minLength": 1},
-        "type": {"type": "string", "minLength": 1},
-        "code": {"type": "string", "minLength": 1}
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 },
+        "code": { "type": "string", "minLength": 1 }
+      }
+    },
+    "alias": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "terms": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "channel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "category", "scope"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "category": {
+          "type": "string",
+          "enum": [
+            "marketplace",
+            "giveaway",
+            "exchange",
+            "repair_directory",
+            "donation_directory"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["global", "country", "municipality"]
+        },
+        "countries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          }
+        },
+        "municipalityIds": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "urlTemplate": { "type": "string", "minLength": 1 },
+        "requires": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["query", "city", "zip", "citySlug"]
+          }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "then"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string" },
+        "rationale": { "type": "string" },
+        "priority": { "type": "number" },
+        "when": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "itemIds": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "keywords": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "obs": {
+              "type": "object",
+              "additionalProperties": {
+                "anyOf": [
+                  { "type": "string" },
+                  { "type": "number" },
+                  { "type": "boolean" }
+                ]
+              }
+            }
+          }
+        },
+        "then": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["action"],
+          "properties": {
+            "action": { "type": "string", "minLength": 1 },
+            "title": { "type": "string" },
+            "rationale": { "type": "string" },
+            "steps": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "priority": { "type": "number" },
+            "channelIds": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "locationIds": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "locationTypes": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
       }
     },
     "optionCard": {
@@ -142,7 +290,7 @@
       "additionalProperties": false,
       "required": ["id", "kind", "title", "priority", "confidence", "actions"],
       "properties": {
-        "id": {"type": "string", "minLength": 1},
+        "id": { "type": "string", "minLength": 1 },
         "kind": {
           "type": "string",
           "enum": [
@@ -156,12 +304,12 @@
             "sell"
           ]
         },
-        "title": {"type": "string", "minLength": 1},
-        "priority": {"type": "number"},
-        "confidence": {"type": "number"},
+        "title": { "type": "string", "minLength": 1 },
+        "priority": { "type": "number" },
+        "confidence": { "type": "number" },
         "actions": {
           "type": "array",
-          "items": {"$ref": "#/definitions/action"}
+          "items": { "$ref": "#/definitions/action" }
         }
       }
     },
@@ -172,9 +320,9 @@
           "additionalProperties": true,
           "required": ["type", "label", "text"],
           "properties": {
-            "type": {"const": "copy_text"},
-            "label": {"type": "string", "minLength": 1},
-            "text": {"type": "string", "minLength": 1}
+            "type": { "const": "copy_text" },
+            "label": { "type": "string", "minLength": 1 },
+            "text": { "type": "string", "minLength": 1 }
           }
         },
         {
@@ -182,9 +330,9 @@
           "additionalProperties": true,
           "required": ["type", "label", "payload"],
           "properties": {
-            "type": {"const": "navigate"},
-            "label": {"type": "string", "minLength": 1},
-            "payload": {"type": "object"}
+            "type": { "const": "navigate" },
+            "label": { "type": "string", "minLength": 1 },
+            "payload": { "type": "object" }
           }
         }
       ]

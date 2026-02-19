@@ -7,11 +7,13 @@ RePath is a logic-first decision engine for reuse and recycling. It turns local 
 npm install
 npm run validate
 npm run query -- --pack fort-collins-co-us "cardboard"
+npm run decide -- --packId fort-collins-co-us --label chair --countryCode US
 ```
 
 ## Tooling
 - `npm run build:manifest` generates `dist/manifest.json` from local packs.
 - `npm run build:manifest` also generates `dist/search.json` with a lightweight token index.
+- `npm run decide` runs deterministic pathway decisions (rules + channels + donation locations).
 - `npm run release:runtime` builds a release-ready runtime data bundle plus checksums.
 - `npm run smoke` runs a tiny validation + query smoke test.
 Notes:
@@ -84,6 +86,12 @@ Required fields:
 - `jurisdiction` or `municipality`
 - `locations[]` (id, name, country)
 - `items[]` (id, name, keywords?, option_cards[])
+
+Optional decision-engine fields:
+- `extends[]` (pack inheritance)
+- `variables{}` (template variables, for example `craigslistSubdomain`)
+- `channels[]` (global/country/municipality channel definitions)
+- `rules[]` (pathway rules with `then.channelIds` and optional location targeting)
 
 Optional versioning:
 - `pack_schema_version` (e.g. `1.1.0`)

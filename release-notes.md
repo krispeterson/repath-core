@@ -1,5 +1,15 @@
 # RePath Core Release Notes
 
+## Upcoming (Unreleased)
+- Adds deterministic decide-engine support for reuse channels + donation places.
+- Adds pack inheritance (`extends`) and variables-driven URL templating for channel links.
+- Adds country/municipality-scoped channel filtering and top-pathway follow-up questions (city/ZIP).
+- Adds new baseline channel packs:
+  - `repath.base.channels.v1`
+  - `repath.country.us.channels.v1`
+  - `repath.country.us.default.v1` (national fallback for unmapped U.S. ZIPs)
+  - `repath.muni.us-co-fort-collins.v1` (sample)
+
 ## Version
 - `v0.1.1`
 

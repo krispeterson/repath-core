@@ -4,13 +4,15 @@
   "type": "module",
   "scripts": {
     "build:manifest": "node tools/manifest-build.js",
+    "decide": "node tools/repath-decide.js",
     "query": "node tools/query-pack.js",
     "release:runtime": "node tools/release-runtime-bundle.js",
     "smoke": "node tools/smoke-test.js",
+    "test": "node --test test/**/*.test.js",
     "validate": "node tools/validate-pack.js"
   },
   "dependencies": {
-    "ajv": "^8.12.0",
+    "ajv": "^8.18.0",
     "ajv-formats": "^3.0.1"
   },
   "optionalDependencies": {

@@ -1,0 +1,60 @@
+{
+  "query": "chair",
+  "item": {
+    "id": "furniture",
+    "name": "Furniture"
+  },
+  "pathways": [
+    {
+      "id": "reuse-furniture-and-durable-goods",
+      "action": "reuse",
+      "title": "Reuse, give away, or sell first",
+      "channelIds": [
+        "fort-collins-local-gifting",
+        "freecycle-town-finder",
+        "trash-nothing",
+        "buy-nothing",
+        "craigslist",
+        "depop",
+        "ebay",
+        "offerup",
+        "repair-cafe-visit"
+      ],
+      "locationIds": []
+    },
+    {
+      "id": "donate-durable-goods",
+      "action": "donate",
+      "title": "Donate usable items nearby",
+      "channelIds": [
+        "goodwill-locator",
+        "habitat-restore-finder",
+        "salvation-army-dropoff"
+      ],
+      "locationIds": [
+        "goodwill-fort-collins",
+        "habitat-restore-fort-collins"
+      ]
+    },
+    {
+      "id": "furniture-trash",
+      "action": "trash",
+      "title": "Trash",
+      "channelIds": [],
+      "locationIds": []
+    }
+  ],
+  "questions": [],
+  "ruleTrace": {
+    "itemId": "furniture",
+    "matchedRuleIds": [
+      "reuse-furniture-and-durable-goods",
+      "donate-durable-goods"
+    ],
+    "pathwayIds": [
+      "reuse-furniture-and-durable-goods",
+      "donate-durable-goods",
+      "furniture-trash"
+    ]
+  }
+}

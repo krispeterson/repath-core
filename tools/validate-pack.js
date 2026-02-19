@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { createRequire } from 'module';
+import { loadMergedPack } from './lib/pack-loader.js';
 
 function fail(errors) {
   console.error(errors.join('\n'));
@@ -93,6 +94,56 @@ function validatePack(pack, filePath, schemaValidator) {
       }
       if (!isNonEmptyString(loc.country)) {
         errors.push(`${prefix}locations[${i}].country must be a non-empty string`);
+      }
+    });
+  }
+
+  if (pack.variables !== undefined && (typeof pack.variables !== 'object' || Array.isArray(pack.variables))) {
+    errors.push(`${prefix}variables must be an object when provided`);
+  }
+
+  if (pack.extends !== undefined && !Array.isArray(pack.extends)) {
+    errors.push(`${prefix}extends must be an array when provided`);
+  }
+
+  if (Array.isArray(pack.channels)) {
+    const seen = new Set();
+    pack.channels.forEach((channel, i) => {
+      if (!channel || typeof channel !== 'object') {
+        errors.push(`${prefix}channels[${i}] must be an object`);
+        return;
+      }
+      if (!isNonEmptyString(channel.id)) {
+        errors.push(`${prefix}channels[${i}].id must be a non-empty string`);
+      } else if (seen.has(channel.id)) {
+        errors.push(`${prefix}channels[${i}].id must be unique within a pack`);
+      } else {
+        seen.add(channel.id);
+      }
+      if (!isNonEmptyString(channel.name)) {
+        errors.push(`${prefix}channels[${i}].name must be a non-empty string`);
+      }
+    });
+  }
+
+  if (Array.isArray(pack.rules)) {
+    const seenRuleIds = new Set();
+    pack.rules.forEach((rule, i) => {
+      if (!rule || typeof rule !== 'object') {
+        errors.push(`${prefix}rules[${i}] must be an object`);
+        return;
+      }
+      if (!isNonEmptyString(rule.id)) {
+        errors.push(`${prefix}rules[${i}].id must be a non-empty string`);
+      } else if (seenRuleIds.has(rule.id)) {
+        errors.push(`${prefix}rules[${i}].id must be unique within a pack`);
+      } else {
+        seenRuleIds.add(rule.id);
+      }
+      if (!rule.then || typeof rule.then !== 'object') {
+        errors.push(`${prefix}rules[${i}].then must be an object`);
+      } else if (!isNonEmptyString(rule.then.action)) {
+        errors.push(`${prefix}rules[${i}].then.action must be a non-empty string`);
       }
     });
   }
@@ -205,6 +256,13 @@ for (const packPath of packPaths) {
     const pack = readPackFile(packPath);
     const errors = validatePack(pack, packPath, schemaValidator);
     allErrors.push(...errors);
+    if (!errors.length && isNonEmptyString(pack.pack_id)) {
+      try {
+        loadMergedPack(pack.pack_id, { rootDir: '.' });
+      } catch (error) {
+        allErrors.push(`${packPath}: inheritance ${error.message}`);
+      }
+    }
   } catch (error) {
     allErrors.push(`${packPath}: ${error.message}`);
   }

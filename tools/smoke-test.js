@@ -37,4 +37,38 @@ if (!hasAllowed) {
   process.exit(1);
 }
 
+const decideRun = run('node', [
+  'tools/repath-decide.js',
+  '--packId',
+  'repath.muni.us-co-fort-collins.v1',
+  '--label',
+  'chair',
+  '--countryCode',
+  'US'
+]);
+
+if (decideRun.status !== 0) {
+  console.error(decideRun.stdout || '');
+  console.error(decideRun.stderr || '');
+  process.exit(1);
+}
+
+let decision = null;
+try {
+  decision = JSON.parse(decideRun.stdout.trim());
+} catch (error) {
+  console.error('Failed to parse decide output as JSON');
+  console.error(decideRun.stdout || '');
+  process.exit(1);
+}
+
+const reusePathway = Array.isArray(decision.pathways)
+  ? decision.pathways.find((pathway) => pathway.action === 'reuse')
+  : null;
+
+if (!reusePathway || !Array.isArray(reusePathway.channels) || reusePathway.channels.length < 2) {
+  console.error('Smoke test failed: expected reuse pathway with channels in decide output');
+  process.exit(1);
+}
+
 console.log('Smoke test passed');
