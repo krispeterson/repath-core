@@ -10,6 +10,33 @@ npm run query -- --pack fort-collins-co-us "cardboard"
 npm run decide -- --packId fort-collins-co-us --label chair --countryCode US
 ```
 
+## Agent reviews and quality gates
+
+Role contracts are defined in:
+- `docs/agents/README.md`
+- `docs/agents/ux.md`
+- `docs/agents/qa.md`
+- `docs/agents/devsecops.md`
+- `docs/agents/pm.md`
+
+Run local review checks:
+```bash
+npm run validate
+npm run smoke
+npm test
+npm run review:devsecops
+npm run review:pm
+```
+
+Pull request flow:
+- Fill `.github/pull_request_template.md`, including the `Agent Reviews` section.
+- Open a PR to trigger `.github/workflows/role-review-gates.yml`.
+- You can also run `Role Review Gates` manually from GitHub Actions (`workflow_dispatch`).
+
+Gate configuration:
+- `REPATH_AUDIT_FAIL_LEVEL` (default: `critical`) controls the `npm audit` threshold. Supported values: `off`, `low`, `moderate`, `high`, `critical`.
+- `REPATH_PM_STRICT` (GitHub repository variable) makes PM contract checks blocking when set to `true`.
+
 ## Tooling
 - `npm run build:manifest` generates `dist/manifest.json` from local packs.
 - `npm run build:manifest` also generates `dist/search.json` with a lightweight token index.
