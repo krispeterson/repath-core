@@ -1,6 +1,6 @@
 # RePath
 
-RePath is a logic-first decision engine for reuse and recycling. It turns local rules into clear, ranked options—reuse, sell, recycle, drop-off, or trash—based on what you’re holding and where you are. Built for camera-first, offline-friendly, white-label apps.
+RePath is a logic-first decision engine for reuse and recycling. It turns local rules into clear, ranked options—reuse, sell, recycle, drop-off, or trash—based on what you’re holding and where you are. Built for offline-friendly, white-label apps.
 
 ## Quick start
 ```bash
